@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── New Warm Editorial Palette ── */
+  --color-ink:     #1A1208;
+  --color-cream:   #FAF6F1;
+  --color-clay:    #C87941;
+  --color-clay-dark: #A8612E;
+  --color-sage:    #4A6741;
+  --color-sage-light: #6A8F60;
+  --color-smoke:   #6B6560;
+  --color-surface: #FFFFFF;
+  --color-border:  #E8E2DA;
+  --color-muted:   #F2EDE7;
+
+  /* ── Legacy brand tokens kept for compatibility ── */
+  --color-brand-teal:  #4F6D7A;
+  --color-brand-beige: #EAE0D5;
+  --color-brand-brown: #B07D62;
+  --color-brand-dark:  #221510;
+  --color-brand-bg:    #FAF6F1;
+
+  /* ── Fonts ── */
+  --font-sans:   'DM Sans', system-ui, sans-serif;
+  --font-serif:  'DM Serif Display', Georgia, serif;
+
+  /* ── Animations ── */
+  --animate-background-pulse: backgroundPulse 12s ease-in-out infinite;
+  --animate-particle-float: particleFloat 15s linear infinite;
+  --animate-reveal-text: revealText 1s ease forwards;
+  --animate-gradient-flow: gradientFlow 6s ease infinite;
+  --animate-fade-in-up: fadeInUp 0.8s ease forwards;
+  --animate-button-gradient: buttonGradient 4s ease infinite;
+  --animate-slide-in-right: slideInRight 1s ease forwards;
+  --animate-morph-blob-1: morphBlob1 15s ease-in-out infinite;
+  --animate-morph-blob-2: morphBlob2 12s ease-in-out infinite;
+  --animate-float-image: floatImage 6s ease-in-out infinite;
+  --animate-float: float 4s ease-in-out infinite;
+  --animate-shine: shine 8s ease-in-out infinite;
+
+  @keyframes backgroundPulse {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.2); }
+  }
+  @keyframes particleFloat {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    50% { opacity: 0.2; }
+    100% { transform: translateY(-100vh) scale(1); opacity: 0; }
+  }
+  @keyframes revealText {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes gradientFlow {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes buttonGradient {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(100px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes morphBlob1 {
+    0%, 100% { border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%; transform: rotate(0deg); }
+    33% { border-radius: 70% 30% 46% 54% / 36% 68% 32% 64%; transform: rotate(120deg); }
+    66% { border-radius: 30% 70% 30% 70% / 60% 40% 60% 40%; transform: rotate(240deg); }
+  }
+  @keyframes morphBlob2 {
+    0%, 100% { border-radius: 70% 30% 46% 54% / 36% 68% 32% 64%; transform: rotate(0deg); }
+    33% { border-radius: 30% 70% 30% 70% / 60% 40% 60% 40%; transform: rotate(-120deg); }
+    66% { border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%; transform: rotate(-240deg); }
+  }
+  @keyframes floatImage {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    33% { transform: translateY(-20px) rotate(1deg); }
+    66% { transform: translateY(10px) rotate(-1deg); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-30px) rotate(10deg); }
+  }
+  @keyframes shine {
+    0%, 100% { opacity: 0; transform: scale(0.8); }
+    50% { opacity: 0.2; transform: scale(1.2); }
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  font-family: 'DM Sans', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #FAF6F1;
+  color: #1A1208;
+}
+
+.font-display {
+  font-family: 'DM Serif Display', Georgia, serif;
+}

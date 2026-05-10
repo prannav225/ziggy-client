@@ -2,7 +2,6 @@ import React, { useState, useContext, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GlobalStateContext } from '../context/GlobalStateContext';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
-import './CSS/Voice.css';
 
 const playAudioFromText = async (text) => {
   const encodedText = encodeURIComponent(text);
@@ -266,80 +265,103 @@ const VoiceAssistant = () => {
 
   if (!Togg) {
     return (
-      <div className="voice-assistant-floating">
-        <button className="floating-voice-button" onClick={openAssistant} title="Open Voice Assistant">
-          <span className="mic-icon">🎤</span>
-          {isSpeaking && <span className="floating-pulse"></span>}
+      <div className="fixed bottom-8 right-8 z-[999] flex flex-col items-center">
+        <button 
+          className="w-[70px] h-[70px] rounded-full bg-gradient-to-br from-[#4F6D7A] to-[#EAE0D5] border-none text-white text-3xl cursor-pointer shadow-[0_10px_25px_rgba(79,109,122,0.4)] flex items-center justify-center transition-all duration-300 hover:scale-110 hover:rotate-6 relative active:scale-95"
+          onClick={openAssistant} 
+          title="Open Voice Assistant"
+        >
+          <span>🎤</span>
+          {isSpeaking && <span className="absolute inset-0 rounded-full bg-[#4F6D7A]/40 animate-ping"></span>}
         </button>
-        {isSpeaking && <div className="floating-speaking-indicator">🔊 Speaking...</div>}
+        {isSpeaking && (
+          <div className="mt-2 bg-black/70 text-white px-3 py-1 rounded-full text-[10px] uppercase tracking-widest font-bold animate-pulse">
+            🔊 Speaking...
+          </div>
+        )}
       </div>
     );
   }
 
   return (
-    <div className="voice-assistant-panel">
-      <div className="voice-header">
-        <h3>🎤 Voice Assistant</h3>
-        {speechMethod === 'google' && (
-          <p className="voice-subtitle">(Using Google TTS)</p>
-        )}
+    <div className="fixed bottom-8 right-8 z-[999] w-[350px] max-w-[calc(100vw-40px)] rounded-3xl bg-[#F5F5F5] p-6 shadow-2xl border border-[#4F6D7A15] font-sans animate-in fade-in slide-in-from-bottom-5 duration-300">
+      <div className="flex justify-between items-center mb-5 pb-3 border-b border-[#4F6D7A15]">
+        <div>
+            <h3 className="text-lg font-bold text-[#4F6D7A] flex items-center gap-2">
+                🎤 Voice Assistant
+            </h3>
+            {speechMethod === 'google' && (
+                <p className="text-[10px] text-[#B07D62] font-semibold uppercase tracking-wider">Using Google TTS</p>
+            )}
+        </div>
+        <button 
+          className="w-8 h-8 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all active:scale-90"
+          onClick={closeAssistant}
+        >
+            ✕
+        </button>
       </div>
 
-      <div className="voice-controls">
+      <div className="space-y-4">
         <button
-          className={`listen-button ${isListening ? 'listening' : ''}`}
+          className={`w-full py-4 rounded-full font-bold text-sm uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-3 shadow-lg active:scale-[0.98] ${
+            isListening 
+            ? 'bg-white text-[#221510] border-2 border-[#B07D62] animate-pulse' 
+            : 'bg-gradient-to-r from-[#4F6D7A] to-[#B07D62] text-white hover:shadow-xl hover:translate-y-[-2px]'
+          }`}
           onClick={isListening ? stopListening : startListening}
           disabled={isProcessing}
         >
           {isListening ? (
-            <><span className="pulse-icon"></span>Listening... Click to Stop</>
-          ) : isProcessing ? 'Processing...' : '🎤 Start Voice Command'}
+            <><span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span> Listening... Stop</>
+          ) : isProcessing ? (
+            <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Processing...</>
+          ) : (
+            <>🎤 Start Voice Command</>
+          )}
         </button>
 
         {isListening && (
-          <div className="listening-indicator">
-            <div className="sound-wave">
-              {[...Array(5)].map((_, i) => <div key={i} className="bar"></div>)}
+          <div className="flex items-center justify-center gap-3 py-2 bg-[#4F6D7A10] rounded-2xl animate-in fade-in duration-300">
+            <div className="flex items-center gap-1 h-6">
+                {[...Array(5)].map((_, i) => (
+                    <div 
+                        key={i} 
+                        className="w-1 bg-[#4F6D7A] rounded-full animate-float"
+                        style={{ height: `${12 + Math.random() * 12}px`, animationDelay: `${i * 0.15}s` }}
+                    ></div>
+                ))}
             </div>
-            <span>Speak now...</span>
+            <span className="text-xs font-bold text-[#4F6D7A] uppercase tracking-wide">Speak now...</span>
           </div>
         )}
 
-        {isProcessing && (
-          <div className="processing-indicator">
-            <div className="spinner"></div>
-            Processing your command...
+        {transcript && (
+          <div className="bg-white p-4 rounded-2xl border-l-4 border-[#4F6D7A] shadow-sm">
+            <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">You said:</div>
+            <div className="text-sm text-[#221510] italic font-medium leading-relaxed">"{transcript}"</div>
           </div>
         )}
-      </div>
 
-      {transcript && (
-        <div className="voice-transcript">
-          <div className="transcript-label">You said:</div>
-          <div className="transcript-text">"{transcript}"</div>
+        {assistantResponse && (
+          <div className="bg-white p-4 rounded-2xl border-l-4 border-[#B07D62] shadow-sm animate-in fade-in slide-in-from-left-2 duration-300">
+            <div className="text-[10px] text-[#B07D62] font-bold uppercase tracking-widest mb-1">Assistant:</div>
+            <div className="text-sm text-[#221510] font-semibold leading-relaxed mb-2">{assistantResponse}</div>
+            {isSpeaking && (
+              <div className="flex items-center gap-2 text-[#4F6D7A] text-[10px] font-bold uppercase animate-pulse">
+                <span>🔊</span>
+                {speechMethod === 'google' ? 'Playing Audio...' : 'Speaking...'}
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="p-3 bg-[#4F6D7A08] rounded-xl border border-[#4F6D7A10]">
+          <p className="text-[10px] text-gray-500 font-medium leading-relaxed italic">
+            💡 <strong>Try:</strong> "Go to menu", "Show pizzas", "Add 2 burgers", "Go to cart", "Login", "Logout"
+          </p>
         </div>
-      )}
-
-      {assistantResponse && (
-        <div className="assistant-response">
-          <div className="response-label">Assistant:</div>
-          <div className="response-text">{assistantResponse}</div>
-          {isSpeaking && (
-            <div className="speaking-indicator">
-              <span className="sound-icon">🔊</span>
-              {speechMethod === 'google' ? 'Playing...' : 'Speaking...'}
-            </div>
-          )}
-        </div>
-      )}
-
-      <div className="voice-tips">
-        <small>
-          💡 <strong>Try saying:</strong> "Go to menu", "Show pizzas", "Add 3 burgers", "Go to cart", "Login", "Logout"
-        </small>
       </div>
-
-      <button className="close-button" onClick={closeAssistant}>✕</button>
     </div>
   );
 };

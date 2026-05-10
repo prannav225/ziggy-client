@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import './CSS/LoginToast.css'
+import React from 'react'
 
 const LoginToast = ({ userName, onDone }) => {
-  const [visible, setVisible] = useState(false)
-  const [leaving, setLeaving] = useState(false)
+  const [visible, setVisible] = React.useState(false)
+  const [leaving, setLeaving] = React.useState(false)
 
   const getGreeting = () => {
     const hour = new Date().getHours()
@@ -16,19 +15,10 @@ const LoginToast = ({ userName, onDone }) => {
   const { text: greeting, emoji } = getGreeting()
   const firstName = userName ? userName.split(' ')[0] : 'there'
 
-  useEffect(() => {
-    // Slide in after a tiny delay so the animation triggers
+  React.useEffect(() => {
     const showTimer = setTimeout(() => setVisible(true), 50)
-
-    // Start slide-out after 4 seconds
-    const hideTimer = setTimeout(() => {
-      setLeaving(true)
-    }, 4200)
-
-    // Unmount after animation completes
-    const doneTimer = setTimeout(() => {
-      onDone()
-    }, 4800)
+    const hideTimer = setTimeout(() => setLeaving(true), 4200)
+    const doneTimer = setTimeout(() => onDone(), 4800)
 
     return () => {
       clearTimeout(showTimer)
@@ -38,27 +28,38 @@ const LoginToast = ({ userName, onDone }) => {
   }, [onDone])
 
   return (
-    <div className={`login-toast ${visible ? 'toast-show' : ''} ${leaving ? 'toast-leave' : ''}`}>
+    <div 
+      className={`fixed top-24 right-5 z-[3000] w-[340px] bg-white rounded-2xl p-5 shadow-[0_8px_40px_rgba(26,18,8,0.15)] border border-[#E8E2DA] overflow-hidden transition-all duration-500 ease-out ${
+        visible && !leaving 
+          ? 'translate-x-0 opacity-100 scale-100' 
+          : 'translate-x-full opacity-0 scale-95'
+      }`}
+    >
       {/* Progress bar */}
-      <div className="toast-progress" />
+      <div className={`absolute bottom-0 left-0 h-1 bg-[#C87941] transition-all duration-[4200ms] linear rounded-b-2xl ${visible ? 'w-full' : 'w-0'}`} />
 
-      <div className="toast-icon-wrap">
-        <span className="toast-check">✓</span>
+      <div className="flex gap-4 items-start">
+        <div className="w-10 h-10 bg-[#4A6741] rounded-xl flex items-center justify-center text-white text-base shadow-sm shrink-0">
+          ✓
+        </div>
+
+        <div className="flex-1">
+          <p className="text-[#1A1208] font-bold text-sm mb-0.5">Login Successful!</p>
+          <p className="text-[#C87941] font-medium text-sm mb-2">
+            {emoji} {greeting}, <span className="font-bold">{firstName}</span>!
+          </p>
+          <p className="text-[#6B6560] text-xs font-medium leading-relaxed">
+            Welcome back to <span className="text-[#1A1208] font-bold">EchoEats</span> 🍽️ Your favourite meals are just a click away.
+          </p>
+        </div>
+
+        <button 
+          className="text-[#6B6560]/50 hover:text-[#1A1208] transition-colors text-lg leading-none shrink-0" 
+          onClick={() => { setLeaving(true); setTimeout(onDone, 500) }}
+        >
+          ×
+        </button>
       </div>
-
-      <div className="toast-body">
-        <p className="toast-title">Login Successful!</p>
-        <p className="toast-greeting">
-          {emoji} {greeting}, <strong>{firstName}</strong>!
-        </p>
-        <p className="toast-message">
-          Welcome back to <span className="toast-brand">KITCHEN-TO-HOME</span> 🍽️
-          <br />
-          <span className="toast-sub">Your favourite meals are just a click away.</span>
-        </p>
-      </div>
-
-      <button className="toast-close" onClick={() => { setLeaving(true); setTimeout(onDone, 600) }}>✕</button>
     </div>
   )
 }
