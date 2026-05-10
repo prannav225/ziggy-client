@@ -1,0 +1,17 @@
+/* Logout-specific overrides on top of LoginToast base styles */
+
+.logout-toast {
+    border-left: 4px solid #B07D62;
+}
+
+.logout-progress {
+    background: linear-gradient(90deg, #B07D62, #EAE0D5) !important;
+}
+
+.logout-icon-wrap {
+    background: linear-gradient(135deg, #B07D62, #221510) !important;
+}
+
+.logout-title {
+    color: #B07D62 !important;
+}

@@ -1,0 +1,123 @@
+.menu-page {
+    min-height: 100vh;
+    background: #F5F5F5;
+    font-family: 'Inter', -apple-system, sans-serif;
+    margin-top: 30px;
+}
+
+/* ── Header Banner ── */
+.menu-header {
+    width: 100%;
+    background: linear-gradient(135deg, #4F6D7A 0%, #3d5561 60%, #221510 100%);
+    padding: 60px 5% 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.menu-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 80% 50%, #B07D6220 0%, transparent 60%),
+                radial-gradient(circle at 20% 80%, #EAE0D510 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.menu-header-content {
+    position: relative;
+    z-index: 2;
+    max-width: 700px;
+}
+
+.menu-badge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #EAE0D5;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 6px 18px;
+    border-radius: 50px;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(8px);
+}
+
+.menu-header-content h1 {
+    font-size: 52px;
+    font-weight: 900;
+    color: white;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    letter-spacing: -2px;
+}
+
+.menu-highlight {
+    background: linear-gradient(135deg, #B07D62, #EAE0D5);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.menu-header-content p {
+    font-size: 17px;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.7;
+    max-width: 520px;
+}
+
+.menu-header-decor {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    gap: 20px;
+    font-size: 52px;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
+    animation: floatEmoji 4s ease-in-out infinite;
+}
+
+.menu-header-decor span:nth-child(2) { animation-delay: 0.5s; }
+.menu-header-decor span:nth-child(3) { animation-delay: 1s; }
+.menu-header-decor span:nth-child(4) { animation-delay: 1.5s; }
+
+@keyframes floatEmoji {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .menu-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px;
+        padding: 50px 5% 40px;
+    }
+
+    .menu-header-content h1 {
+        font-size: 36px;
+    }
+
+    .menu-header-content p {
+        font-size: 15px;
+    }
+
+    .menu-header-decor {
+        font-size: 36px;
+        gap: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .menu-header-content h1 {
+        font-size: 28px;
+    }
+
+    .menu-badge {
+        font-size: 12px;
+    }
+}
