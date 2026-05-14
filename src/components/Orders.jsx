@@ -1,159 +1,134 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { GlobalStateContext } from '../context/GlobalStateContext'
+import { Package, FileText, CheckCircle, ChefHat, Bike, UtensilsCrossed, RefreshCw, Star, ArrowRight } from 'lucide-react'
 
 const OrdersPage = () => {
-    const { isLoggedIn, user } = useContext(GlobalStateContext)
+    const { isLoggedIn, user, foodData, updateQuantity } = useContext(GlobalStateContext)
     const [orders, setOrders] = useState([])
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
 
     useEffect(() => {
-        if (!isLoggedIn) {
-            navigate('/login', { state: { from: { pathname: '/orders' } } })
-            return
-        }
+        if (!isLoggedIn) { navigate('/login', { state: { from: { pathname: '/orders' } } }); return }
         fetchOrders()
-        const intervalId = setInterval(fetchOrders, 5000)
-        return () => clearInterval(intervalId)
+        const id = setInterval(fetchOrders, 5000)
+        return () => clearInterval(id)
     }, [isLoggedIn])
 
     const fetchOrders = async () => {
         try {
-            const response = await fetch(`http://localhost:8000/orders/${user.user_id}/`)
-            const data = await response.json()
-            if (Array.isArray(data)) {
-                setOrders(data)
-            } else if (data && data.success === false) {
-                console.error("Error from server:", data.error)
-                setOrders([])
-            } else {
-                console.error("Unexpected response format:", data)
-                setOrders([])
-            }
-            setLoading(false)
-        } catch (error) {
-            console.error("Error fetching orders:", error)
-            setOrders([])
-            setLoading(false)
-        }
+            const res = await fetch(`http://localhost:8000/orders/${user.user_id}/`)
+            const data = await res.json()
+            setOrders(Array.isArray(data) ? data : [])
+        } catch { setOrders([]) }
+        finally { setLoading(false) }
     }
 
-    const getStatusConfig = (status) => {
-        switch (status) {
-            case 'placed':           return { bg: 'bg-[#FFF8F0]', text: 'text-[#C87941]', border: 'border-[#C87941]/20', dot: 'bg-[#C87941]' }
-            case 'confirmed':        return { bg: 'bg-[#F0F7F0]', text: 'text-[#4A6741]', border: 'border-[#4A6741]/20', dot: 'bg-[#4A6741]' }
-            case 'preparing':        return { bg: 'bg-[#FFF3ED]', text: 'text-orange-700',  border: 'border-orange-200',    dot: 'bg-orange-500' }
-            case 'out-for-delivery': return { bg: 'bg-[#F0F8FF]', text: 'text-sky-700',    border: 'border-sky-200',       dot: 'bg-sky-500' }
-            case 'delivered':        return { bg: 'bg-[#F0FAF0]', text: 'text-emerald-700', border: 'border-emerald-200',   dot: 'bg-emerald-500' }
-            default:                 return { bg: 'bg-[#F5F5F5]', text: 'text-[#6B6560]', border: 'border-[#E8E2DA]',     dot: 'bg-[#6B6560]' }
+    const handleReorder = async (order) => {
+        for (const orderItem of order.items) {
+            const foodItem = foodData.find(f => f.FoodName === orderItem.name)
+            if (foodItem) await updateQuantity(foodItem.FoodID, orderItem.quantity)
         }
+        navigate('/cart')
     }
 
-    const getStatusIcon = (status) => {
-        switch (status) {
-            case 'placed':           return '📝'
-            case 'confirmed':        return '✅'
-            case 'preparing':        return '👨‍🍳'
-            case 'out-for-delivery': return '🛵'
-            case 'delivered':        return '🍽️'
-            default:                 return '📦'
-        }
+    const statusConfig = {
+        placed:           { label: 'Placed',         color: 'text-amber-600',  bg: 'bg-amber-50',   border: 'border-amber-200',   icon: <FileText size={12} /> },
+        confirmed:        { label: 'Confirmed',       color: 'text-blue-600',   bg: 'bg-blue-50',    border: 'border-blue-200',    icon: <CheckCircle size={12} /> },
+        preparing:        { label: 'Preparing',       color: 'text-orange-600', bg: 'bg-orange-50',  border: 'border-orange-200',  icon: <ChefHat size={12} /> },
+        'out-for-delivery': { label: 'Out for Delivery', color: 'text-sky-600', bg: 'bg-sky-50',     border: 'border-sky-200',     icon: <Bike size={12} /> },
+        delivered:        { label: 'Delivered',       color: 'text-green-600',  bg: 'bg-green-50',   border: 'border-green-200',   icon: <UtensilsCrossed size={12} /> },
     }
+
+    const getStatus = (s) => statusConfig[s] || { label: s || 'Pending', color: 'text-[#6b6b6b]', bg: 'bg-[#f5f5f4]', border: 'border-[#e7e5e4]', icon: <Package size={12} /> }
 
     if (!isLoggedIn) return null
 
     return (
-        <div className="max-w-[1100px] mx-auto px-4 py-12 font-sans min-h-screen">
+        <div className="max-w-[1000px] mx-auto px-6 py-12 font-sans min-h-screen">
 
-            {/* Header */}
-            <div className="mb-12">
-                <div className="inline-flex items-center gap-2 bg-[#F2EDE7] border border-[#E8E2DA] px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest text-[#6B6560] mb-5">
-                  📦 Orders
-                </div>
-                <h1 className="font-display text-4xl md:text-5xl font-normal text-[#1A1208]">Order History</h1>
+            <div className="mb-10">
+                <p className="text-xs font-semibold text-[#b82609] uppercase tracking-[0.15em] mb-2">History</p>
+                <h1 className="font-display text-4xl font-bold text-[#1a1a1a]">Orders</h1>
             </div>
 
             {loading ? (
-                <div className="flex flex-col items-center justify-center py-24 gap-4">
-                    <div className="w-10 h-10 border-2 border-[#1A1208] border-t-transparent rounded-full animate-spin"></div>
-                    <p className="text-[#6B6560] font-medium text-sm uppercase tracking-widest">Fetching your orders...</p>
+                <div className="flex items-center justify-center py-24 gap-3 text-[#6b6b6b]">
+                    <div className="w-5 h-5 border-2 border-[#1a1a1a] border-t-transparent rounded-full animate-spin" />
+                    <span className="text-sm font-medium">Fetching orders...</span>
                 </div>
-            ) : !Array.isArray(orders) || orders.length === 0 ? (
-                <div className="max-w-lg mx-auto bg-white rounded-3xl p-16 text-center border border-[#E8E2DA] shadow-[0_4px_24px_rgba(26,18,8,0.06)]">
-                    <div className="text-7xl mb-6">🥡</div>
-                    <h2 className="font-display text-2xl font-normal text-[#1A1208] mb-3">No orders yet</h2>
-                    <p className="text-[#6B6560] font-medium mb-8 text-sm">Hungry? Order some delicious food from our menu!</p>
+            ) : !orders.length ? (
+                <div className="py-24 text-center">
+                    <div className="w-16 h-16 rounded-2xl bg-[#f5f5f4] flex items-center justify-center mx-auto mb-5">
+                        <Package size={24} className="text-[#a8a29e]" />
+                    </div>
+                    <h3 className="font-display text-xl font-bold text-[#1a1a1a] mb-2">No orders yet</h3>
+                    <p className="text-[#6b6b6b] text-sm mb-6">Hungry? Order something delicious from our menu.</p>
                     <button
-                        onClick={() => navigate('/#items')}
-                        className="bg-[#1A1208] text-[#FAF6F1] px-8 py-3 rounded-xl font-semibold text-sm hover:bg-[#C87941] hover:shadow-[0_8px_24px_rgba(200,121,65,0.35)] transition-all"
+                        onClick={() => navigate('/menu')}
+                        className="px-5 py-2.5 bg-[#1a1a1a] text-white text-sm font-semibold rounded-lg hover:bg-[#b82609] transition-colors flex items-center gap-2 mx-auto"
                     >
-                        Browse Menu
+                        Browse Menu <ArrowRight size={14} />
                     </button>
                 </div>
             ) : (
-                <div className="grid gap-6">
+                <div className="space-y-4">
                     {orders.map((order) => {
-                        const statusCfg = getStatusConfig(order.order_status)
+                        const s = getStatus(order.order_status)
                         return (
-                            <div key={order.order_id} className="bg-white rounded-2xl p-7 border border-[#E8E2DA] hover:shadow-[0_4px_24px_rgba(26,18,8,0.08)] hover:-translate-y-0.5 transition-all duration-200">
-
-                                {/* Order Header */}
-                                <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6 pb-5 border-b border-[#E8E2DA]">
-                                    <div>
-                                        <div className="flex items-baseline gap-2 mb-1">
-                                            <span className="text-[10px] font-bold text-[#6B6560] uppercase tracking-widest">Order</span>
-                                            <span className="text-lg font-bold text-[#1A1208]">#{order.order_id}</span>
-                                        </div>
-                                        <div className="text-xs text-[#6B6560] font-medium">
-                                            {new Date(order.order_date).toLocaleDateString('en-IN', {
-                                                day: 'numeric',
-                                                month: 'short',
-                                                year: 'numeric',
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            })}
-                                        </div>
+                            <div key={order.order_id} className="bg-white border border-[#e7e5e4] rounded-xl overflow-hidden hover:shadow-[0_2px_16px_rgba(0,0,0,0.06)] transition-shadow">
+                                {/* Header */}
+                                <div className="px-6 py-4 border-b border-[#e7e5e4] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-xs font-bold text-[#a8a29e] uppercase tracking-widest">Order #{order.order_id}</span>
+                                        <span className="text-[#e7e5e4]">·</span>
+                                        <span className="text-xs text-[#a8a29e]">
+                                            {new Date(order.order_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                        </span>
                                     </div>
-                                    <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl border text-xs font-semibold ${statusCfg.bg} ${statusCfg.text} ${statusCfg.border}`}>
-                                        <span className={`w-1.5 h-1.5 rounded-full ${statusCfg.dot} animate-pulse`}></span>
-                                        <span>{getStatusIcon(order.order_status)}</span>
-                                        <span className="uppercase tracking-wide">{order.order_status?.replace(/-/g, ' ') || 'Pending'}</span>
-                                    </div>
+                                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs font-semibold ${s.bg} ${s.color} ${s.border}`}>
+                                        {s.icon} {s.label}
+                                    </span>
                                 </div>
 
-                                {/* Order Items */}
-                                <div className="space-y-2.5 mb-6">
-                                    {order.items && order.items.map((item, index) => (
-                                        <div key={index} className="flex justify-between items-center bg-[#FAF6F1] p-3.5 rounded-xl border border-[#E8E2DA]">
-                                            <div className="flex items-center gap-3">
-                                                <span className="w-7 h-7 rounded-lg bg-white border border-[#E8E2DA] flex items-center justify-center font-bold text-[#C87941] text-xs shadow-sm">{item.quantity}×</span>
-                                                <span className="font-medium text-[#1A1208] text-sm">{item.name}</span>
+                                {/* Items */}
+                                <div className="px-6 py-4 space-y-2">
+                                    {order.items?.map((item, i) => (
+                                        <div key={i} className="flex items-center justify-between text-sm">
+                                            <div className="flex items-center gap-2 text-[#1a1a1a]">
+                                                <span className="text-[#b82609] font-bold text-xs">{item.quantity}×</span>
+                                                <span className="font-medium">{item.name}</span>
                                             </div>
-                                            <span className="font-bold text-[#1A1208] text-sm">₹{parseFloat(item.price).toFixed(2)}</span>
+                                            <span className="text-[#6b6b6b]">₹{parseFloat(item.price).toFixed(2)}</span>
                                         </div>
                                     ))}
                                 </div>
 
-                                {/* Order Footer */}
-                                <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-5 border-t border-[#E8E2DA]">
-                                    <div>
-                                        <span className="text-[10px] text-[#6B6560] font-bold uppercase tracking-widest block mb-1">Payment</span>
-                                        <span className="text-sm font-medium text-[#1A1208] bg-[#F2EDE7] px-3 py-1.5 rounded-lg border border-[#E8E2DA]">
-                                            {order.payment_method === 'COD' ? '💵 Cash on Delivery' : '📱 Online Payment'}
+                                {/* Footer */}
+                                <div className="px-6 py-4 bg-[#f5f5f4] border-t border-[#e7e5e4] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-xs font-medium text-[#a8a29e] bg-white border border-[#e7e5e4] px-3 py-1.5 rounded-lg">
+                                            {order.payment_method === 'COD' ? 'Cash on Delivery' : 'Online Payment'}
                                         </span>
+                                        <div className="text-right">
+                                            <span className="text-xs text-[#a8a29e]">Total </span>
+                                            <span className="text-sm font-bold text-[#1a1a1a]">₹{parseFloat(order.total_amount).toFixed(2)}</span>
+                                        </div>
                                     </div>
-
-                                    <div className="text-center md:text-right">
-                                        <span className="text-[10px] text-[#6B6560] font-bold uppercase tracking-widest block mb-1">Total Paid</span>
-                                        <span className="font-display text-2xl font-normal text-[#1A1208]">₹{parseFloat(order.total_amount).toFixed(2)}</span>
-                                    </div>
-
-                                    {order.order_status === 'delivered' && (
-                                        <button className="px-6 py-2.5 bg-[#FAF6F1] border border-[#E8E2DA] text-[#1A1208] font-semibold text-xs uppercase tracking-widest rounded-xl hover:bg-[#1A1208] hover:text-white hover:border-[#1A1208] transition-all duration-200">
-                                            Rate Order
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={() => handleReorder(order)}
+                                            className="flex items-center gap-1.5 px-4 py-2 border border-[#1a1a1a] text-[#1a1a1a] rounded-lg text-xs font-semibold hover:bg-[#1a1a1a] hover:text-white transition-colors"
+                                        >
+                                            <RefreshCw size={12} /> Reorder
                                         </button>
-                                    )}
+                                        {order.order_status === 'delivered' && (
+                                            <button className="flex items-center gap-1.5 px-4 py-2 border border-[#e7e5e4] text-[#6b6b6b] rounded-lg text-xs font-semibold hover:border-[#b82609] hover:text-[#b82609] transition-colors">
+                                                <Star size={12} /> Rate
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         )

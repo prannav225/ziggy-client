@@ -1,63 +1,50 @@
 import React from 'react'
+import { LogOut, X } from 'lucide-react'
 
 const LogoutToast = ({ userName, onDone }) => {
   const [visible, setVisible] = React.useState(false)
   const [leaving, setLeaving] = React.useState(false)
 
   const getGreeting = () => {
-    const hour = new Date().getHours()
-    if (hour >= 5 && hour < 12) return { text: 'Good Morning', emoji: '☀️' }
-    if (hour >= 12 && hour < 17) return { text: 'Good Afternoon', emoji: '🌤️' }
-    if (hour >= 17 && hour < 21) return { text: 'Good Evening', emoji: '🌇' }
-    return { text: 'Good Night', emoji: '🌙' }
+    const h = new Date().getHours()
+    if (h >= 5 && h < 12) return 'Good Morning'
+    if (h >= 12 && h < 17) return 'Good Afternoon'
+    if (h >= 17 && h < 21) return 'Good Evening'
+    return 'Good Night'
   }
 
-  const { text: greeting, emoji } = getGreeting()
   const firstName = userName ? userName.split(' ')[0] : 'there'
 
   React.useEffect(() => {
-    const showTimer = setTimeout(() => setVisible(true), 50)
-    const hideTimer = setTimeout(() => setLeaving(true), 4200)
-    const doneTimer = setTimeout(() => onDone(), 4800)
-
-    return () => {
-      clearTimeout(showTimer)
-      clearTimeout(hideTimer)
-      clearTimeout(doneTimer)
-    }
+    const t1 = setTimeout(() => setVisible(true), 50)
+    const t2 = setTimeout(() => setLeaving(true), 4200)
+    const t3 = setTimeout(() => onDone(), 4800)
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
   }, [onDone])
 
   return (
-    <div 
-      className={`fixed top-24 right-5 z-[3000] w-[340px] bg-white rounded-2xl p-5 shadow-[0_8px_40px_rgba(26,18,8,0.15)] border border-[#E8E2DA] overflow-hidden transition-all duration-500 ease-out ${
-        visible && !leaving 
-          ? 'translate-x-0 opacity-100 scale-100' 
-          : 'translate-x-full opacity-0 scale-95'
+    <div
+      className={`fixed bottom-6 right-5 z-[3000] w-[320px] bg-white rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-[#e7e5e4] overflow-hidden transition-all duration-500 ease-out ${
+        visible && !leaving ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
       }`}
     >
-      {/* Progress bar */}
-      <div className={`absolute bottom-0 left-0 h-1 bg-[#4A6741] transition-all duration-[4200ms] linear rounded-b-2xl ${visible ? 'w-full' : 'w-0'}`} />
+      <div className="h-0.5 w-full bg-[#e7e5e4]">
+        <div className={`h-full bg-[#1a1a1a] transition-all duration-[4200ms] linear ${visible ? 'w-full' : 'w-0'}`} />
+      </div>
 
-      <div className="flex gap-4 items-start">
-        <div className="w-10 h-10 bg-[#C87941] rounded-xl flex items-center justify-center text-white text-base shadow-sm shrink-0">
-          👋
+      <div className="flex gap-3 items-start p-4">
+        <div className="w-8 h-8 bg-[#f5f5f4] border border-[#e7e5e4] rounded-lg flex items-center justify-center shrink-0">
+          <LogOut size={14} className="text-[#6b6b6b]" />
         </div>
-
-        <div className="flex-1">
-          <p className="text-[#1A1208] font-bold text-sm mb-0.5">Logged Out</p>
-          <p className="text-[#C87941] font-medium text-sm mb-2">
-            {emoji} {greeting}, <span className="font-bold">{firstName}</span>!
-          </p>
-          <p className="text-[#6B6560] text-xs font-medium leading-relaxed">
-            Logged out from <span className="text-[#1A1208] font-bold">EchoEats</span>. Hope to see you back soon! 🍽️
-          </p>
+        <div className="flex-1 min-w-0">
+          <p className="text-[#1a1a1a] font-semibold text-sm">Signed out</p>
+          <p className="text-[#6b6b6b] text-xs mt-0.5">{getGreeting()}, <span className="font-semibold text-[#1a1a1a]">{firstName}</span>. See you soon.</p>
         </div>
-
-        <button 
-          className="text-[#6B6560]/50 hover:text-[#1A1208] transition-colors text-lg leading-none shrink-0" 
+        <button
+          className="text-[#a8a29e] hover:text-[#1a1a1a] transition-colors shrink-0 mt-0.5"
           onClick={() => { setLeaving(true); setTimeout(onDone, 500) }}
         >
-          ×
+          <X size={14} />
         </button>
       </div>
     </div>

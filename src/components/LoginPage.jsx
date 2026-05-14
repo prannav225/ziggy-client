@@ -1,14 +1,16 @@
-import React, { useState, useContext } from "react"
-import { useNavigate, useLocation } from "react-router-dom"
+import React, { useState, useContext } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { GlobalStateContext } from '../context/GlobalStateContext'
+import { Mail, Lock, User, AlertCircle, UtensilsCrossed } from 'lucide-react'
 
 const LoginPage = () => {
   const [isLogin, setIsLogin] = useState(true)
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
   const { login } = useContext(GlobalStateContext)
   const navigate = useNavigate()
   const location = useLocation()
@@ -16,129 +18,110 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError("")
-
+    setError('')
+    setLoading(true)
     try {
-      if (isLogin) {
-        const response = await fetch("http://localhost:8000/login/", {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
-        })
-        const data = await response.json()
-        if (response.ok) {
-          login(data.user)
-          navigate(from, { replace: true })
-        } else {
-          setError(data.error)
-        }
-      } else {
-        const response = await fetch("http://localhost:8000/signup/", {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, password })
-        })
-        const data = await response.json()
-        if (response.ok) {
-          login(data.user)
-          navigate(from, { replace: true })
-        } else {
-          setError(data.error)
-        }
-      }
-    } catch (error) {
-      setError("Server error. Please try again.")
-    }
+      const endpoint = isLogin ? 'http://localhost:8000/login/' : 'http://localhost:8000/signup/'
+      const body = isLogin ? { email, password } : { name, email, password }
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      })
+      const data = await res.json()
+      if (res.ok) { login(data.user); navigate(from, { replace: true }) }
+      else setError(data.error)
+    } catch { setError('Server error. Please try again.') }
+    finally { setLoading(false) }
   }
 
-  const inputClass = "w-full px-4 py-3.5 bg-[#FAF6F1] border border-[#E8E2DA] rounded-xl text-[#1A1208] placeholder:text-[#6B6560]/50 outline-none focus:border-[#C87941] focus:ring-2 focus:ring-[#C87941]/15 transition-all duration-200 text-sm font-medium"
+  const inputBase = 'w-full pl-10 pr-4 py-3 bg-[#f5f5f4] border border-[#e7e5e4] rounded-lg text-sm font-medium text-[#1a1a1a] placeholder:text-[#a8a29e] outline-none focus:border-[#b82609]/60 focus:bg-white focus:shadow-[0_0_0_3px_rgba(184,38,9,0.08)] transition-all'
 
   return (
-    <div className="min-h-screen flex bg-[#FAF6F1] font-sans">
-      {/* Left Panel — Brand */}
-      <div className="hidden lg:flex flex-1 bg-[#1A1208] items-center justify-center p-16 relative overflow-hidden">
-        <div className="absolute top-[20%] right-[-10%] w-80 h-80 bg-[#C87941]/10 rounded-full blur-[80px]"></div>
-        <div className="absolute bottom-[10%] left-[-5%] w-64 h-64 bg-[#4A6741]/10 rounded-full blur-[60px]"></div>
-        <div className="relative z-10 text-center">
-          <div className="text-6xl mb-6">🍽️</div>
-          <h2 className="font-display text-4xl font-normal text-white mb-4 leading-tight">
+    <div className="min-h-screen flex font-sans">
+
+      {/* Left Panel */}
+      <div className="hidden lg:flex flex-1 bg-[#1a1a1a] items-center justify-center p-16 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[#b82609]/5" />
+        <div className="relative z-10 max-w-[360px]">
+          <div className="w-12 h-12 rounded-xl bg-[#b82609] flex items-center justify-center mb-10">
+            <UtensilsCrossed size={22} className="text-white" />
+          </div>
+          <h2 className="font-display text-4xl font-bold text-white leading-tight mb-4">
             Delicious food,<br />
-            <span className="text-[#C87941] italic">at your voice.</span>
+            <span className="text-[#b82609]">at your voice.</span>
           </h2>
-          <p className="text-white/50 text-sm max-w-[280px] mx-auto leading-relaxed font-medium">
+          <p className="text-white/50 text-sm leading-relaxed mb-10">
             The world's first voice-powered food delivery experience. Order hands-free, eat happy.
           </p>
-          <div className="flex justify-center gap-3 mt-10">
-            {['500+ Restaurants', '20min Delivery', '50k+ Customers'].map((t, i) => (
-              <div key={i} className="bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-[10px] text-white/60 font-medium uppercase tracking-widest">{t}</div>
+          <div className="space-y-3">
+            {['500+ Restaurant Partners', '20 min Average Delivery', '50,000+ Happy Customers'].map((t, i) => (
+              <div key={i} className="flex items-center gap-3 text-white/60 text-sm">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#b82609] shrink-0" />
+                {t}
+              </div>
             ))}
           </div>
         </div>
       </div>
 
       {/* Right Panel — Form */}
-      <div className="flex-1 flex items-center justify-center p-8">
-        <div className="w-full max-w-[400px]">
-          <div className="mb-10">
-            <h1 className="font-display text-3xl font-normal text-[#1A1208] mb-2">
-              {isLogin ? "Welcome back" : "Create account"}
+      <div className="flex-1 flex items-center justify-center p-8 bg-white">
+        <div className="w-full max-w-[380px]">
+
+          <div className="mb-8">
+            <h1 className="font-display text-3xl font-bold text-[#1a1a1a] mb-1">
+              {isLogin ? 'Welcome back' : 'Create account'}
             </h1>
-            <p className="text-[#6B6560] text-sm font-medium">
-              {isLogin ? "Sign in to your EchoEats account" : "Join us for delicious food today"}
+            <p className="text-[#6b6b6b] text-sm">
+              {isLogin ? 'Sign in to your Ziggy account' : 'Join us for delicious food today'}
             </p>
           </div>
 
           {error && (
-            <div className="bg-red-50 text-red-700 border border-red-100 p-4 rounded-xl text-sm font-medium mb-6">
-              ⚠️ {error}
+            <div className="flex items-start gap-2.5 bg-red-50 text-red-700 border border-red-200 p-3.5 rounded-lg text-sm mb-5">
+              <AlertCircle size={15} className="shrink-0 mt-0.5" />
+              <span>{error}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-3">
             {!isLogin && (
-              <input
-                type="text"
-                placeholder="Full Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className={inputClass}
-                required
-              />
+              <div className="relative">
+                <User size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#a8a29e]" />
+                <input type="text" placeholder="Full Name" value={name} onChange={(e) => setName(e.target.value)} className={inputBase} required />
+              </div>
             )}
 
-            <input
-              type="email"
-              placeholder="Email Address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className={inputClass}
-              required
-            />
+            <div className="relative">
+              <Mail size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#a8a29e]" />
+              <input type="email" placeholder="Email Address" value={email} onChange={(e) => setEmail(e.target.value)} className={inputBase} required />
+            </div>
 
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={inputClass}
-              required
-            />
+            <div className="relative">
+              <Lock size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#a8a29e]" />
+              <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className={inputBase} required />
+            </div>
 
-            <button 
-              type="submit" 
-              className="w-full py-3.5 bg-[#1A1208] text-[#FAF6F1] font-semibold rounded-xl hover:bg-[#C87941] active:scale-[0.98] transition-all duration-300 mt-2 text-sm shadow-[0_4px_16px_rgba(26,18,8,0.2)] hover:shadow-[0_8px_24px_rgba(200,121,65,0.35)]"
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 bg-[#1a1a1a] text-white font-semibold rounded-lg hover:bg-[#b82609] transition-colors mt-1 text-sm disabled:opacity-60 flex items-center justify-center gap-2"
             >
-              {isLogin ? "Sign In" : "Create Account"}
+              {loading
+                ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Loading...</>
+                : isLogin ? 'Sign In' : 'Create Account'
+              }
             </button>
           </form>
 
-          <p className="text-center text-[#6B6560] text-sm font-medium mt-6">
-            {isLogin ? "Don't have an account?" : "Already have an account?"}
-            <span 
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-[#C87941] cursor-pointer font-bold ml-1.5 hover:text-[#1A1208] transition-colors"
+          <p className="text-center text-[#6b6b6b] text-sm mt-6">
+            {isLogin ? "Don't have an account?" : 'Already have an account?'}
+            <span
+              onClick={() => { setIsLogin(!isLogin); setError('') }}
+              className="text-[#b82609] cursor-pointer font-semibold ml-1.5 hover:underline"
             >
-              {isLogin ? "Sign Up" : "Sign In"}
+              {isLogin ? 'Sign Up' : 'Sign In'}
             </span>
           </p>
         </div>

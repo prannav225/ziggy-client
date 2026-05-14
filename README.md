@@ -1,6 +1,6 @@
-# Voice Assistant - EchoEats
+# Voice Assistant - Kitchen To Home
 
-A powerful voice-enabled assistant for EchoEats food ordering application that allows users to navigate, search, filter, and order food using natural voice commands.
+A powerful voice-enabled assistant for Kitchen To Home food ordering application that allows users to navigate, search, filter, and order food using natural voice commands.
 
 ## Features
 
@@ -160,4 +160,4 @@ The voice assistant requires:
 
 ---
 
-*Built with ❤️ for EchoEats - Voice-Based Food Ordering System
+*Built with ❤️ for Kitchen To Home - Voice-Based Food Ordering System
