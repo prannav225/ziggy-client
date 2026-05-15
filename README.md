@@ -1,10 +1,11 @@
-# Voice Assistant - Kitchen To Home
+# Voice Assistant - Ziggy
 
-A powerful voice-enabled assistant for Kitchen To Home food ordering application that allows users to navigate, search, filter, and order food using natural voice commands.
+A powerful voice-enabled assistant for Ziggy food ordering application that allows users to navigate, search, filter, and order food using natural voice commands.
 
 ## Features
 
 ### Core Functionality
+
 - **Voice Navigation** - Navigate to different pages using voice commands
 - **Food Ordering** - Add items to cart with quantity specifications
 - **Category Filtering** - Filter food items by categories (Pizza, Burger, Main Course, etc.)
@@ -14,27 +15,30 @@ A powerful voice-enabled assistant for Kitchen To Home food ordering application
 
 ### 🗣️ Voice Commands
 
-| Command Type | Examples | Action |
-|-------------|----------|--------|
-| **Navigation** | "go to home", "show cart", "open orders" | Navigates to specified page |
-| **Filter** | "show me pizzas", "show burgers", "display main course" | Filters items by category |
-| **Order** | "add one pizza", "add three burgers", "order two biryani" | Adds items to cart |
-| **Login** | "login", "sign in" | Initiates voice login flow |
-| **Logout** | "logout", "sign out" | Logs out current user |
-| **Checkout** | "go to checkout", "proceed to payment" | Opens payment modal |
+| Command Type   | Examples                                                  | Action                      |
+| -------------- | --------------------------------------------------------- | --------------------------- |
+| **Navigation** | "go to home", "show cart", "open orders"                  | Navigates to specified page |
+| **Filter**     | "show me pizzas", "show burgers", "display main course"   | Filters items by category   |
+| **Order**      | "add one pizza", "add three burgers", "order two biryani" | Adds items to cart          |
+| **Login**      | "login", "sign in"                                        | Initiates voice login flow  |
+| **Logout**     | "logout", "sign out"                                      | Logs out current user       |
+| **Checkout**   | "go to checkout", "proceed to payment"                    | Opens payment modal         |
 
 ## 🚀 How It Works
 
 ### 1. **Activation**
+
 - Click the 🎤 microphone button floating at the bottom-right
 - Voice panel opens with "Listening..." indicator
 
 ### 2. **Speaking Commands**
+
 - Speak naturally (e.g., "show me pizzas")
 - Pause for 1.5 seconds to process
 - Assistant responds verbally and executes action
 
 ### 3. **Login Flow**
+
 - Say "login"
 - Assistant asks for email
 - Speak your email
@@ -43,6 +47,7 @@ A powerful voice-enabled assistant for Kitchen To Home food ordering application
 - Confirmation of successful login
 
 ### 4. **Ordering Flow**
+
 - Say "add two pepperoni pizza"
 - Items added to cart immediately
 - Verbal confirmation
@@ -70,6 +75,7 @@ A powerful voice-enabled assistant for Kitchen To Home food ordering application
 5. **Voice Feedback** - Speaks confirmation to user
 
 ### Supported Pages
+
 - `/` - Home page
 - `/about` - About page
 - `/login` - Login page
@@ -90,8 +96,9 @@ A powerful voice-enabled assistant for Kitchen To Home food ordering application
 ## 🔧 Configuration
 
 The voice assistant requires:
+
 - Browser support for Web Speech API
-- Backend endpoint at `http://localhost:3000/voice`
+- Backend endpoint at `${API_BASE}/voice/`
 - Groq API key for AI processing
 - MySQL database for user and order data
 
@@ -113,16 +120,19 @@ The voice assistant requires:
 ## 🐛 Troubleshooting
 
 **No voice response**
+
 - Check browser speech synthesis support
 - Ensure microphone permissions are granted
 - Verify audio output devices
 
 **Commands not recognized**
+
 - Speak clearly with natural pauses
 - Check internet connection for API calls
 - Verify backend is running
 
 **Login issues**
+
 - Ensure correct email format
 - Password is case-sensitive
 - Check network connectivity
@@ -160,4 +170,4 @@ The voice assistant requires:
 
 ---
 
-*Built with ❤️ for Kitchen To Home - Voice-Based Food Ordering System
+\*Built with ❤️ for Ziggy - Voice-Based Food Ordering System
