@@ -13,6 +13,7 @@ const CartPage = lazy(() => import("./pages/CartPage"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const OrdersPage = lazy(() => import("./pages/OrdersPage"));
 const MenuPage = lazy(() => import("./pages/MenuPage"));
+const PresentationPage = lazy(() => import("./pages/PresentationPage"));
 
 const App = () => {
   return (
@@ -43,6 +44,7 @@ const App = () => {
                 }
               />
             </Route>
+            <Route path="/presentation" element={<PresentationPage />} />
           </Routes>
         </Suspense>
       </GlobalStateProvider>
